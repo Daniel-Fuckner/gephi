@@ -1,0 +1,65 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\defcounter {refsection}{0}\relax 
+\select@language {ngerman}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {1}{\ignorespaces Entstehung eines Funnels}}{1}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {2}{\ignorespaces H\IeC {\"a}ufigkeit der Clicks im Mittel}}{6}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3}{\ignorespaces Anteil Funnels mit mindestens einem Click}}{6}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {4}{\ignorespaces Kampagnen der konvertierten Funnels}}{7}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {5}{\ignorespaces Wochentage der Kontaktpunkte}}{8}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {6}{\ignorespaces Uhrzeit der Kontaktpunkte}}{9}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {7}{\ignorespaces Kampagnen der konvertierten und nicht-konvertierten Funnels}}{10}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {8}{\ignorespaces L\IeC {\"a}nge der Funnels}}{11}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {9}{\ignorespaces Beobachtungsdauer in Tagen}}{12}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {10}{\ignorespaces Dauer zwischen zwei Kontaktpunkten}}{13}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {11}{\ignorespaces Frequenz der Kontaktpunkte}}{14}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {12}{\ignorespaces workspace}}{17}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {13}{\ignorespaces ergebnis}}{18}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {14}{\ignorespaces export}}{19}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {15}{\ignorespaces Anordnung der Knoten nach dem Einlesen}}{34}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {16}{\ignorespaces Optimale Iterationsanzahl}}{35}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {17}{\ignorespaces Wichtigkeit der Variablen}}{36}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {18}{\ignorespaces Marginaler Effekt von \textit {Campaign}}}{38}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {19}{\ignorespaces Marginaler Effekt von \textit {CampaignLast}}}{39}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {20}{\ignorespaces Marginaler Effekt von \textit {TimeSinceFirst} und \textit {TimeSinceLast}}}{40}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {21}{\ignorespaces ROC-Kurve}}{41}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {22}{\ignorespaces AUC-Wert}}{42}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {23}{\ignorespaces H\IeC {\"a}ufige Sequenzen}}{43}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {24}{\ignorespaces H\IeC {\"a}ufige Sequenzen in Funnels mit mindestens $15$ Kontaktpunkten}}{44}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {25}{\ignorespaces Relative Ausg\IeC {\"a}nge}}{46}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {26}{\ignorespaces Relative Ausg\IeC {\"a}nge mit Filter $0.02$}}{47}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {27}{\ignorespaces Relative Ausg\IeC {\"a}nge mit Filter $0.5$}}{48}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {28}{\ignorespaces Relative Eing\IeC {\"a}nge}}{49}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {29}{\ignorespaces Relative Eing\IeC {\"a}nge mit Filter $0.1$ und Fokus auf Konvertierten}}{50}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {30}{\ignorespaces Relative Eing\IeC {\"a}nge mit Filter $0.1$ und Fokus auf Nicht-Konvertierten}}{51}
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {31}{\ignorespaces Verzeichnisstruktur des Projekts}}{52}

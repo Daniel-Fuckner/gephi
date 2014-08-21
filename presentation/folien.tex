@@ -1,0 +1,71 @@
+\documentclass{beamer}
+\usepackage{beamerthemeshadow}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+%Tabellen:
+	\usepackage{slashbox} %schrägstich in tabelle möglich
+	\usepackage{multirow}
+%Mathematik:
+	\usepackage{dsfont} %Symbole
+	\usepackage{amsmath} %Umgebung
+	\usepackage{amssymb} %Symbole
+	\usepackage{bbm} %doppelstreifen bei buchstaben (zb symbol für ganze zahlen \mathbbm{Z})
+%Grafiken:
+	\usepackage{graphics}
+	\usepackage{graphicx}
+	\usepackage{picinpar} %bilder so einfügen, dass text um bilder weiterläuft
+	\usepackage{float} %\begin{figure}[H] => Grafik wird HIER eingefügt!
+%Pseudo Code:
+	\usepackage{algorithmic}
+	\usepackage{algorithm}
+	
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\beamersetuncovermixins{\opaqueness<1>{25}}{\opaqueness<2->{15}}
+\setbeamertemplate{footline} %seitenzahl rechts unten
+{%
+  \leavevmode%
+ \begin{beamercolorbox}%
+    [wd=.5\paperwidth,ht=2.5ex,dp=1.125ex,leftskip=.3cm,rightskip=.3cm]%
+    {author in head/foot}%
+    \usebeamerfont{author in head/foot}%
+    \hfill\insertshortauthor
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}%
+    [wd=.5\paperwidth,ht=2.5ex,dp=1.125ex,leftskip=.3cm ,rightskip=.3cm]%
+    {title in head/foot}%
+    \usebeamerfont{title in head/foot}%
+    \insertshorttitle\hfill\insertframenumber{}/\inserttotalframenumber
+  \end{beamercolorbox}%
+}%
+
+\beamertemplatenavigationsymbolsempty % Abschalten der kleinen Navigationsleiste am unteren Rand
+
+\begin{document}
+\title{Online-Marketing der Interhyp AG}
+\subtitle{Analyse von Tracking-Daten} 
+\author[D. Fuckner \& M. Vogler]{Daniel Fuckner\\Markus Vogler\\Betreuer: Fabian Scheipl}
+\institute{Statistisches Consulting\\Institut für Statistik\\Ludwig-Maximilians-Universität München}
+\date{12.08.2014} 
+
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}\frametitle{Inhaltsverzeichnis}
+	\tableofcontents[hideallsubsections]
+\end{frame}
+
+\input{einleitung.tex}
+\input{deskriptiv.tex}
+\input{modell.tex}
+\input{ergebnisse.tex}
+\input{zusammenfassung.tex}
+
+\begin{frame}
+	\centering \huge
+	Vielen Dank für Ihre Aufmerksamkeit!
+\end{frame}
+
+\end{document}
+

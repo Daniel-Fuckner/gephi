@@ -1,0 +1,45 @@
+\input{Bericht_Praeambel.tex} % Importiere die Einstellungen aus der Präambel
+
+% hier beginnt der eigentliche Inhalt
+\begin{document}
+
+% Deckblatt
+\input{deckblatt.tex}
+
+%\thispagestyle{plain}
+\pagenumbering{roman} %römische Seitennummerierung
+
+%Abstract
+\begin{abstract}
+\noindent\subsubsection*{Abstract}
+Die Interhyp AG ist Vermittler für private Baufinanzierungen. Das primäre Ziel des Marketing der Interhyp AG ist die Kundenakquise. Da etwa 80\% aller Kundenanträge online abgeschickt werden, liegt der Fokus auf dem Online-Marketing, das über verschiedene Kampagnen verfügt. Beispiele sind Kooperationen mit anderen Unternehmen, bezahlte Anzeigen bei Suchmaschinen oder Bannerschaltungen.\\
+Die Refined Labs GmbH ist verantwortlich für das Online-Tracking der Werbekampagnen der Interhyp AG. Durch Online-Tracking werden die Werbekontakte eines potentiellen Kunden zu einem sogenannten Funnel zusammengefasst. Am Ende eines jeden Funnels steht das Ausfüllen eines Onlineantrages oder der Abbruch. Man spricht von konvertierten beziehungsweise nicht-konvertierten Funnels.\\
+In dieser Arbeit werden die Tracking-Daten zunächst anhand deskriptiver Analysen vorgestellt. Außerdem werden Methodik und Ergebnisse eines zeitdiskreten Survival-Modells und eines Sequential Pattern Mining-Algorithmus beschrieben. Mit Hilfe des zeitdiskreten Survival-Modells, das mit Stochastic Gradient Boosting geschätzt wurde, konnten Zusammenhänge zwischen den erklärenden Variablen und der Wahrscheinlichkeit für eine Konvertierung gefunden werden. Häufige Abfolgen von Kampagnen in den konvertierten und nicht-konvertierten Funnels wurden mit dem Sequential Pattern Mining-Algorithmus entdeckt. Zudem wurden die Funnels in Form eines Netzwerkes visualisiert. Die Daten für dieses Netzwerk und ein Programm, dass die interaktive Betrachtung ermöglicht, ist im elektronischen Anhang enthalten.
+\end{abstract}
+
+%Inhaltsverzeichnis
+\newpage
+\tableofcontents
+
+\newpage
+\pagenumbering{arabic} %ab hier wieder normale Seitennummerierung
+
+% Hier beginnt der eigentliche Text
+\input{einleitung.tex} % Importiere die Einleitung
+\input{datenlage.tex}
+\input{deskriptiv.tex}
+\input{gephi.tex}
+\input{survival.tex}
+\input{spm.tex}
+\input{visual.tex}
+\input{ergebnisse.tex}
+\input{zusammenfassung.tex}
+\input{elektronischer_anhang.tex}
+
+\newpage
+\listoftables
+\listoffigures
+\newpage
+\printbibliography
+
+\end{document}

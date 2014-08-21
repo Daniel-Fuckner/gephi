@@ -1,0 +1,52 @@
+\input{Bericht_Praeambel.tex} % Importiere die Einstellungen aus der Präambel
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hier können die Pakete, die benötigten Daten und Graphen für R geladen bzw erstellt werden.
+% echo=FALSE gibt keinen R Output wieder
+% warum wird der folgende chunk nicht übernommen?
+
+
+
+% hier beginnt der eigentliche Inhalt
+\usepackage{Sweave}
+\begin{document}
+\input{Bericht_Sweave-concordance}
+
+% Deckblatt
+\input{deckblatt.tex}
+
+%\thispagestyle{plain}
+\pagenumbering{roman} %römische Seitennummerierung
+
+%Abstract
+\begin{abstract}
+  \noindent
+	\paragraph{Abstract:}
+	\paragraph{Background:} In patients with
+\end{abstract}
+
+%Inhaltsverzeichnis
+\newpage
+\tableofcontents
+
+\newpage
+\pagenumbering{arabic} %ab hier wieder normale Seitennummerierung
+
+% Hier beginnt der eigentliche Text
+\input{einleitung.tex} % Importiere die Einleitung
+\input{datenlage.tex}
+\input{survival.tex}
+\input{spm.tex}
+
+\begin{Schunk}
+\begin{Sinput}
+> plot1
+\end{Sinput}
+\end{Schunk}
+\includegraphics{Bericht_Sweave-002}
+
+%Literaturverzeichnis
+\newpage
+\printbibliography 
+
+\end{document}

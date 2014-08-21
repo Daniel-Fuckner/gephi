@@ -1,0 +1,15 @@
+\beamer@endinputifotherversion {3.26pt}
+\select@language {ngerman}
+\beamer@sectionintoc {1}{Einleitung}{3}{0}{1}
+\beamer@sectionintoc {2}{Deskriptive Analyse}{5}{0}{2}
+\beamer@subsectionintoc {2}{1}{Views in den konvertierten Funnels}{8}{0}{2}
+\beamer@subsectionintoc {2}{2}{Vergleich von konvertierten und nicht-konvertierten Funnels}{11}{0}{2}
+\beamer@sectionintoc {3}{Methoden}{15}{0}{3}
+\beamer@subsectionintoc {3}{1}{Zeitdiskretes Survival-Modell}{16}{0}{3}
+\beamer@subsectionintoc {3}{2}{Sequential Pattern Mining}{22}{0}{3}
+\beamer@subsectionintoc {3}{3}{Visualisierung anhand eines Netzwerkes}{23}{0}{3}
+\beamer@sectionintoc {4}{Ergebnisse}{25}{0}{4}
+\beamer@subsectionintoc {4}{1}{Zeitdiskretes Survival-Modell}{26}{0}{4}
+\beamer@subsectionintoc {4}{2}{Sequential Pattern Mining}{30}{0}{4}
+\beamer@subsectionintoc {4}{3}{Visualisierung anhand eines Netzwerkes}{31}{0}{4}
+\beamer@sectionintoc {5}{Zusammenfassung}{38}{0}{5}

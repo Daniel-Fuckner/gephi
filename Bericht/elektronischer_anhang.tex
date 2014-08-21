@@ -1,0 +1,39 @@
+\section{Elektronischer Anhang}\label{anhang}
+
+\subsection{Verzeichnisstruktur}
+Abbildung \ref{verz} zeigt die Verzeichnisstruktur des elektronischen Anhangs. Dieser soll hier noch erklärt werden.
+\begin{figure}[H]
+\dirtree{% dieses Kommentar-Zeichen ist noetig, da der erste Charakter in der Umgebung ein '.' sein muss
+.1 consulting/.
+.2 raw\_data/.
+.2 r\_data/.
+.2 sql\_scripts/.
+.2 r\_scripts/.
+.3 support\_functions/.
+.2 r\_results/.
+.3 descriptive/.
+.3 gbm\_no\_offset/.
+.3 gbm\_no\_offset\_interactions/.
+.3 gbm\_offset/.
+.3 gbm\_offset\_bag/.
+.3 gbm\_offset\_interactions/.
+.3 spm/.
+.2 network/.
+.3 gephi/.
+.3 network\_data/.
+.2 presentation.pdf.
+.2 report.pdf.
+.2 README.pdf.
+}
+\caption{Verzeichnisstruktur des Projekts}\label{verz}
+\end{figure}
+Die rohen Daten, die von der Refined Labs GmbH bereitgestellt wurden, sind im Ordner \textit{raw\_data} enthalten und im Ordner \textit{r\_data} sind die vorverarbeiteten Daten im \textit{RData}-Format abgespeichert. Der Ordner \textit{sql\_scripts} enthält die SQL Skripte, die für die Vorverarbeitung der Daten verwendet wurden. Die R Skripte zur weiteren Vorverarbeitung der Daten, zur deskriptiven Analyse, zur Schätzung des zeitdiskreten Survival-Modells mittels Stochastic Gradient Boosting, zum Sequential Pattern Mining sowie zur Erstellung des Netzwerkes sind im Ordner \textit{r\_scripts} gespeichert. Der Unterordner \textit{support\_functions} enthält zudem einige Hilfsfunktionen.\\
+Die Ergebnisse sind in dem Ornder \textit{r\_results} gespeichert. Der Unterordner \textit{descriptive} enthält die in Kapitel \ref{descriptiv} vorgestellten Grafiken als \textit{pdf}-Dateien, wobei die Namen der Dateien aus den Namen der Features resultieren.\\
+Der Ordner \textit{spm} enthält die Ergebnisse des Sequential Pattern Mining-Algorithmus im \textit{RData}-Format sowie als Plot, wie in Kapitel \ref{ergspm} vorgestellt. Die Dateien \textit{spadeFail\_all.RData} und \textit{spadeSucc\_all.RData} sind die Ergebnisse des SPADE-Algorithmus in den nicht-konvertierten und konvertierten Funnels, wobei die kompletten Daten berücksichtigt wurden, und \textit{spm\_all.pdf} ist die Visualisierung der Ergebnisse in Form eines Barplots. Außerdem wurde der Algorithmus nur auf Funnels mit mindestens $10$ beziehungsweise $15$ Kontaktpunkten angewendet. Die Namen dieser Ergebnis-Dateien sind analog mit den Endungen \textit{min10} beziehungsweise \textit{min15}.\\
+Der Ordner \textit{gbm\_offset} enthält die Ergebnisse des Survival-Modells, die in diesem Bericht vorgestellt wurden. Die Dateien \textit{dataTrain.RData} und \textit{dataTest.RData} enthalten die Trainings- und Testdaten. Die Datei \textit{model.RData} enthält das eigentliche Ergebnis des Modells und \textit{predTrain.RData} und \textit{predTest.RData} enthalten die Vorhersagen auf den Daten anhand des Modells. Die Vorhersagen auf den Trainingsdaten wurden lediglich für den Offset verwendet und die Vorhersagen auf den Testdaten wurden zur Bewertung der Prognosegüte des Modells verwendet. Außerdem enthält der Ordner einige Plots zur Visualisierung der Ergebnisse. Unter anderem sind hier die marginalen Effekte aller Features für jede Position enthalten.\\
+Zusätzlich zu den Ergebnissen, die in diesem Bericht vorgestellt wurden, sind noch Ergebnisse des Survival-Modells mit anderen Parametereinstellungen im Ordner \textit{r\_results} bereitgestellt. Diese Parametereinstellungen haben allerdings stets zu schlechteren Resultaten geführt als die Ergebnisse in dem Ordner \textit{gbm\_offset}. Der Ordner \textit{gbm\_no\_offset} enthält Ergebnisse des Modells ohne Offset und \textit{gbm\_no\_offset\_interactions} Ergebnisse ohne Offset und mit Interaktionen, das heißt einer \textit{interaction.depth} von $2$. Für den Ordner \textit{gbm\_offset\_bag} wurde lediglich die \textit{bag.fraction} auf $1$ gesetzt und die Ergebnisse sind nahezu identisch zu \textit{gbm\_offset}. Ergebnisse mit Offset und Interaktionen sind im Ordner \textit{gbm\_offset\_interactions} zu finden.\\
+Für die Ergebnisse des Netzwerkes wurde ein seperater Ordner \textit{network} angelegt. Der Unterordner \textit{gephi} enthält die Installationsdateien für das Open Source-Programm \textit{Gephi}, dass für das Arbeiten mit dem Netzwerk benötigt wird. Die \textit{dmg}-Datei ist für Computer mit dem Betriebssystem \textit{Mac OSX}, die \textit{gz}-Datei ist für Linux und die \textit{exe}-Datei für Windows. Alternativ können die Installationsdateien auch auf \textit{https://gephi.github.io/} heruntergeladen werden.\\
+Nach der Installation von \textit{Gephi} kann das Netzwerk in das Programm gelesen werden. Der Ordner \textit{network\_data} enthält dafür sechs Dateien. Das gesamte Netzwerk mit allen Positionen kann mit den Dateien \textit{relative\_ausgänge.gexf} oder \textit{relative\_eingänge.gexf} geladen werden. Die Dateien \textit{relative\_ausgänge\_pos\_10.gexf} und \textit{relative\_eingänge\_pos\_10.gexf} enthalten das selbe Netzwerk, allerdings nur für die ersten $10$ Positionen. Im nächsten Kapitel wird beschrieben, wie man mit diesen Dateien in \textit{Gephi} arbeiten kann. Die Dateien mit der Endung \textit{Layout} enthalten zudem ein Layout des Netzwerkes der ersten $10$ Positionen, das bereits eine übersichtliche Betrachtung des Netzwerkes ermöglicht. Für dieses Layout wurde die Anordnung der Knoten nach dem Anwenden des \textit{ForceAtlas2}-Algorithmus noch manuell bearbeitet.\\
+Neben den bereits beschriebenen Ordnern sind im Hauptverzeichnis noch die Folien des Vortrages vom 12.08.2014 im Institut für Statistik, dieser Bericht sowie dieser elektronische Anhang als \textit{README}-Datei gespeichert.
+
+\subsection{Tutorial zu Gephi}

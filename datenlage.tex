@@ -1,0 +1,38 @@
+\section{Datenlage}\label{datenlage}
+%\begin{table}[H]
+ %   \begin{center}
+  %      \begin{tabular}{|c|p{10cm}|}
+   %         \hline $ touchpoint $  & Kontaktpunkt einer Beobachtung \\
+    %        \hline $ funnel $ & zeitliche Abfolge der Touchpoints einer Beobachtung\\ 
+     %       \hline $ campaign $ & Kategorie der Werbeform auf der obersten Ebene, gegebenfalls auch Ebenen darunter \\ 
+      %      \hline $ position \in \{1,2,\dots\}$  & Nummer des Touchpoints eines Funnels\\
+       %     \hline $ transaction \in \{0,1\}$  & $1$ steht für konvertiert und $0$ für nicht-konvertiert\\
+        %    \hline $ funnelLength \in \{1,2,\dots\} $  & Anzahl der Touchpoints eines Funnels\\
+         %   \hline
+        %\end{tabular} 
+    %\end{center}
+    %\caption{Definition der wichtigsten Begriffe}
+%\end{table}
+Die Daten wurden von der Refined Labs GmbH als SQL-Dump bereitgestellt, der eine Größe von circa $13$ Gigabyte hat. Die MySQL-Datenbank enthält die vier Tabellen \textit{project\_out}, \textit{redirects\_short}, \textit{searchFunnel} und \textit{stage2\_transactionHandling}. Mit Hilfe der vorhanden Informationen in \textit{searchFunnel} und \textit{stage2\_transactionHandling} konnten die Kontaktpunkte in \textit{redirects\_short} in konvertierte und nicht-konvertierte Funnels unterteilt werden. In \textit{projects\_out} sind die Kampagnen in Form einer Baumstruktur organisiert. In Absprache mit der Interhyp AG wurden $17$ Kategorien ausgewählt, die sich auf den ersten drei Ebenen dieser Baumstruktur befinden. Anhand von IDs wurde jedem Kontaktpunkt eine dieser Kategorien zugewiesen.\\
+Tabelle \ref{exdata} enthält ein Datenbeispiel mit den Spalten \textit{ID}, \textit{Campaign}, \textit{Transaction}, \textit{First} und \textit{Last}. Das Beispiel enthält zwei verschiedene \textit{IDs}, das heißt zwei Funnels, wobei der erste vier und der zweite drei Kontaktpunkte hat. Die Spalte \textit{Campaign} enthält die Kampagne der Kontaktpunkte. \textit{Transaction}, \textit{First} und \textit{Last} sind binäre Variablen. \textit{Transaction} gibt an, ob der Kunde konvertiert ist, wobei der Wert $1$ nur für den letzten Kontaktpunkt vor der Konvertiertung angenommen wird. Das heißt bei \textit{ID} $1$ handelt es sich um einen konvertierten und bei \textit{ID} $2$ um einen nicht-konvertierten Funnel. \textit{First} beziehungsweise \textit{Last} nimmt den Wert $1$ an, wenn es sich um den ersten beziehungsweise letzten Kontaktpunkt eines Funnels handelt. Die $17$ Kampagnen und weitere Features, die aus den Daten erzeugt wurden, werden in Kapitel \ref{descriptiv} näher erläutert.\\
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{|c|l|c|c|c|c|}
+			\hline
+			ID & Campaign 									 & Transaction & First & Last & ... \\ \hline\hline
+			1  & Affiliate - Partnerprogramm & 0					 & 1		 & 0    & ... \\ \hline
+			1  & SEM - Brand                 & 0					 & 0		 & 0    & ... \\ \hline
+			1  & Direct                      & 0					 & 0		 & 0    & ... \\ \hline
+			1  & Direct                      & 1					 & 0		 & 1    & ... \\ \hline
+			2  & Display                     & 0					 & 1		 & 0    & ... \\ \hline
+			2  & SEM - Generisch             & 0					 & 0		 & 0    & ... \\ \hline
+			2  & Social Media                & 0					 & 0		 & 1    & ... \\ \hline
+		\end{tabular} 
+	\end{center}
+	\caption{Beispiel für einen Auszug aus der Datenbank}\label{exdata}
+\end{table}
+Ein Kontaktpunkt ist entweder ein \textit{Click} oder ein \textit{View}. Man spricht von einem \textit{Click}, wenn der potentielle Kunde tatsächlich etwas angeklickt hat, wobei die genaue Definition von der Kampagne abhängt. Ein \textit{View} wird getrackt, wenn ein Banner oder ähnliches lediglich gesehen, aber nicht angeklickt wird. An dieser Stelle wirft die Datenerhebung allerdings ein Problem für die statistischen Analysen auf. Die \textit{Views} werden für alle konvertierten Funnels gespeichert, für die nicht-konvertierten Funnels allerdings nur, wenn diese bei einem anderen Kunden der Refined Labs GmbH konvertieren. Dass heißt, es ist eine systematische Veränderung der Daten gegeben. Deshalb besteht keine Möglichkeit die \textit{Views} in statistische Analysen, die konvertierte und nicht-konvertierte Funnels vergleichen, einzubeziehen. Die \textit{Views} werden lediglich in Kapitel \ref{descriptiv} in einigen Plots betrachtet, die nur konvertierte Funnels enthalten, und von den weiteren Analysen ausgeschlossen.\\
+Nach der Vorverarbeitung der Daten liegen ??? konvertierte und ??? nicht-konvertierte Funnels vor, die nur \textit{Clicks} enthalten. Eine nähere Beschreibung der erstellten Features erfolgt in Kapitel \ref{descriptiv}.
+
+
+

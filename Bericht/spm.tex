@@ -1,0 +1,136 @@
+\section{Sequential Pattern Mining}\label{spm}
+
+\subsection{Überblick}
+
+Sequential Pattern Mining entdeckt häufige Subsequenzen, das heißt Teilfolgen, in Datenbanken. Sogenannte Sequenz-Datenbanken bestehen aus Transaktionen, die jeweils eines oder mehrere Items enthalten, welche der Zeit nach geordnet sind. Bei den gegebenen Daten ist eine Transaktion ein Kontaktpunkt, wobei das Item die Kampagne des Kontaktpunktes ist. Ein Funnel setzt sich aus mehreren Transaktionen beziehungsweise Kontaktpunkten zusammen.\\
+Ein Anwendungsfeld ist die Warenkorbanalyse. Angenommen es wird das Kaufverhalten in einem Supermarkt einen Monat lang beobachtet, dann könnte [Kunde 1, <(Brot, Milch), (Brot, Milch, Tee), (Zucker), (Milch, Salz)>]; [Kunde 2, <(Brot), (Milch, Tee)>] eine Beispiel-Datenbank sein. Kunde 1 war vier mal im beobachteten Monat im Supermarkt einkaufen, wobei Kunde 2 nur zweimal einkaufen war. Der Kunde kann nur eins oder auch mehrere Items pro Besuch einkaufen. Im Falle von mehreren Items spricht man von Itemsets.\\
+Web Usage Mining ist das am weitesten verbreitete Anwendungsfeld von Sequential Pattern Mining in der Literatur (\cite{lu_ezeife,wang_han,goethals}). Unter der Annahme, dass ein Internetnutzer nur eine Webseite an einem Zeitpunkt aufrufen kann, bestehen die Sequenzen nur aus einzelnen Items und enthalten keine Itemsets. Ist also eine Menge von Items $I = \{a, b, c, d, e\}$ gegeben, die beispielsweise verschiedene Webseiten repräsentieren, so könnte eine Datenbank mit zwei Nutzern folgendermaßen aussehen: [Kunde 1, <abedcab>]; [Kunde 2, <edcaa>] (\cite{taxonomy}).\\
+In den letzten zwei Jahrzehnten wurden im Forschungsfeld des Sequential Pattern Mining eine Vielzahl von Algorithmen entwickelt. Beispiele sind der HVSM- \cite{hvsm}, der PrefixSpan- \cite{prefixspan}, der FS-Miner \cite{fsminer} und der PLWAP-Algorithmus \cite{plwap}. Folglich stellt sich die Frage, welcher Algorithmus aus dieser großen Auswahl hier verwendet werden soll. Es gibt einige Arbeiten (beispielsweise \cite{spm_taxonomy1,spm_taxonomy2,spm_taxonomy3,spm_taxonomy4}), die Sequential Pattern Mining-Algorithmen, die auf Online-Tracking-Daten anwendbar sind, miteinander vergleichen. Diese konzentrieren sich allerdings nur auf die Techniken und Theorien, auf denen die jeweiligen Algorithmen basieren und bewerten sie anhand ihrer Leistung bei unterschiedlichen Datenstrukturen. Auf die Bewertung der eigentlichen Ergebnisse der Algorithmen wird dabei nicht eingegangen. Deshalb kann an dieser Stelle reinen Gewissens der SPADE-Algorithmus \cite{spade} verwendet werden, der der einzige Sequential Pattern Mining-Algorithmus ist, der in \textit{R} implementiert ist. Außerdem schneidet er im Vergleich zu anderen Algorithmen stets solide ab.
+
+\subsection{Problemstellung}
+Das Problem wurde erstmals im Jahre 1995 in der Arbeit \textit{Mining Sequential Patterns} \cite{aprioriall} von Agrawal \& Srikant vorgestellt. Es ist eine Datenbank $D$ von Transaktionen gegeben, wobei jede Transaktion eine ID, den Zeitpunkt der Transaktion und die dazugehörigen Items enthält. Für jede ID können mehrere Transaktionen existieren, allerdings nie zwei oder mehr Transaktionen mit dem selben Zeitpunkt.\\
+Ein Itemset $i=(i_1i_2...i_m)$ ist eine nichtleere Menge von Items $i_j$ und eine Sequenz $s=s_1\rightarrow s_2\rightarrow ...\rightarrow s_n$ eine geordnete Liste von Itemsets $s_j$. Ohne Beschränkung der Allgemeinheit wird angenommen, dass die Menge der Items auf eine Menge von fortlaufenden ganzen Zahlen abgebildet wird.\\
+Eine Sequenz $a_1\rightarrow a_2\rightarrow ...\rightarrow a_n$ heißt Subsequenz einer anderen Sequenz $b_1\rightarrow b_2\rightarrow ...\rightarrow b_m$ wenn ganze Zahlen $i_1<i_2<...<i_n$ existieren, so dass $a_1\subseteq b_{i_1}$, $a_2\subseteq b_{i_2}$, ..., $a_n\subseteq b_{i_n}$ gilt. Beispielsweise ist $<(1)(58)(27)>$ Subsequenz von $<(15)(248)(358)(27)>$, da $(1)\subseteq(15)$, $(58)\subseteq(358)$ und $(27)\subseteq(27)$ aber $<(27)>$ keine Subsequenz von $<(2)(7)>$ und umgekehrt. Eine Sequenz heißt maximal in einer Menge von Sequenzen, wenn sie von keiner Sequenz in dieser Menge Subsequenz ist.\\
+Die Transaktionen einer ID können als Sequenz verstanden werden. Jede Transaktion entspricht dabei einem Itemset und die nach den Zeitpunkten $T_1,T_2,...,T_n$ geordneten Transaktionen entsprechen einer Sequenz $itemset(T_1)\rightarrow itemset(T_2)\rightarrow ...\rightarrow itemset(T_n)$. Der Support einer Sequenz $s$ ist der Anteil der IDs, die $s$ unterstützen, das heißt deren Sequenz Subsequenz von $s$ sind. Eine Sequenz mit $k$ Items wird auch $k$-Sequenz genannt.\\
+Das Problem des Sequential Pattern Mining besteht darin, in einer Datenbank $D$ unter allen existierenden Sequenzen die maximalen Sequenzen zu finden, deren support größer oder gleich einem festgelegten minimalen Support ist.
+
+\subsection{SPADE}
+Im Folgenden wird der SPADE Algorithmus \cite{spade} vorgestellt, der in dem $R$-Paket \textit{arulesSequences} \cite{arulesSequences} implementiert ist. Dieser sucht häufige Sequenzen von Itemsets, das heißt er kann auch mit Daten umgehen, die mehrere Items pro Zeitpunkt enthalten. Da ein Benutzer nur eine Webseite zum exakt selben Zeitpunkt besuchen kann, ist diese Eigenschaft in diesem Fall nicht relevant.\\
+Die Daten werden für den Algorithmus vertikal bezüglich der IDs angeordnet, so dass diese sich in der ersten Spalte der Datenbank befinden. Die zweite Spalte enthält die Zeit des Kontaktes, die dritte Spalte die Anzahl der Items zu diesem Zeitpunkt und die vierte Spalte die eigentlichen Items. Bei den gegebenen Daten sind die Zeitpunkte die Positionen und damit pro ID von eins bis zur Anzahl der Positionen für die ID durchnummeriert. Die Anzahl der Items in der dritten Spalte ist immer gleich eins und die vierte Spalte enthält pro Zeile nur ein Item (siehe Tabelle \ref{input}).\\
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c}
+ID & Position  & Anzahl Items & Items \\ \hline
+1  & 1				 & 1						& A \\
+1  & 2				 & 1						& D \\
+1  & 3				 & 1						& A \\
+1  & 4				 & 1						& B \\
+2  & 1				 & 1						& C \\
+2  & 2				 & 1						& B \\
+3  & 1				 & 1						& D \\
+4  & 1				 & 1						& A \\
+4  & 2				 & 1						& D \\
+4  & 3				 & 1						& B \\
+\end{tabular}
+\caption{Beispiel für eine Input-Datenbank für den SPADE-Algorithmus}\label{input}
+\end{table}
+
+\subsubsection*{Berechnung des Supports}
+In diesem Abschnitt wird beschrieben, wie der Support einer Sequenz berechnet wird. Tabelle \ref{idlist} enthält die ID-Listen der Items aus den Daten aus Tabelle \ref{input}. Item $A$ beispielsweise, tritt für ID $1$ an Position $1$ und $3$ und für ID $4$ an Position $1$ auf.\\
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c|c|c|c|c}
+\multicolumn{2}{c|}{A} & \multicolumn{2}{c|}{B} & \multicolumn{2}{c|}{C} & \multicolumn{2}{c}{D} \\ \hline
+ID & Position  & ID & Position  & ID & Position  & ID & Position  \\ \hline
+1	 & 1				 & 1  & 4				  & 2  & 1				 & 1  & 2 \\
+1  & 3				 & 2  &	2			    &    &  				 & 3  & 1 \\
+4  & 1				 & 4  &	3			    &    &  				 & 4  & 2 
+\end{tabular}
+\caption{ID-Listen der Items}\label{idlist}
+\end{table}
+Jede Sequenz ist eine zeitabhängige Verknüpfung von Items und der Support der Sequenz kann mittels einer zeitabhängigen Verknüpfung der ID-Listen jedes Items in der Sequenz berechnet werden. In Tabelle \ref{tempjoin} ist diese Vorgehen beispielhaft für die Sequenz $A\rightarrow D\rightarrow B$ dargestellt. Den Support ergibt sich dann, indem die Anzahl der einzigartigen IDs, die die Sequenz enthalten, durch die Anzahl aller IDs in den Daten geteilt wird.\\
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c||c|c|c||c|c|c|c}
+\multicolumn{2}{c||}{A} & \multicolumn{3}{c||}{AD} & \multicolumn{4}{c}{ADB} \\ \hline \hline
+ID & Pos(A) 	    		  & ID & Pos(A) & Pos(D) 		 & ID & Pos(A) & Pos(D) & Pos(B) \\ \hline
+1  & 1									& 1  & 1			& 2          & 1  & 1			 & 2      & 4 \\
+1  & 3									& 4  & 1      & 2          & 4  & 1      & 2      & 3 \\
+4  & 1									& 	 & 				&            & 	  & 			 &        &	
+\end{tabular}
+\caption{Temporale Verknüpfung}\label{tempjoin}
+\end{table}
+Werden für jedes Item einer Sequenz die Zeitpunkte zusammengefasst, wie in Tabelle \ref{tempjoin} dargestellt, so wird sehr viel Speicherplatz verbraucht. Um diesem Problem entgegen zu wirken, wird das Korollar ausgenutzt, das besagt, dass eine Sequenz der Länge $k$ immer aus der Kombination ihrer lexikographisch ersten zwei Subsequenzen der Länge $(k-1)$ gebildet werden kann. Damit werden für jede Sequenz die ID-Spalte und nur eine Spalte für die Zeitpunkte benötigt.\\
+Dies führt zu einer Speicherreduktion da die zwei ersten Sequenzen der Länge $(k-1)$, $X_1$ und $X_2$, einer Sequenz $X$ einen Prefix der Länge $(k-2)$ teilen. Damit sind auch die Zeitpunkte im Prefix gleich und $X_1$ und $X_2$ unterscheiden sich lediglich bezüglich des letzten Items.\\
+In dem Beispiel mit $X=(A\rightarrow D\rightarrow B)$ entsteht $X$ durch den temporalen join von $X_1=(A\rightarrow D)$ und $X_2=(A\rightarrow B)$. $X_1$ entsteht durch das Wegfallen des letzten Items von $X$ und $X_2$ durch das Wegfallen des vorletzten Items. Im Falle längerer Sequenzen wird dieses Vorgehen rekursiv durchgeführt bis die einzelnen Items übrig bleiben. Sei $X$ eine Subsequenz von $Y$, so gilt, dass die Mächtigkeit der ID-Liste von $Y$ kleiner oder gleich der Mächtigkeit der ID-Liste von $X$ sein muss. Das führt zu schnellen Joins und schnellen Berechnungen des Supports.
+
+\subsubsection*{Prefix-basierte Klassen}
+Sei $p:(S,N)\rightarrow S$ eine Funktion, wobei $S$ die Menge der Sequenzen und $N$ eine Menge von nichtnegativen natürlichen Zahlen sind. $p(X,k)=X[1:k]$ gibt den Prefix von $X$ der Länge $k$ zurück. Die Äquivalenz Relation $\theta_k$ wird wie folgt definiert. Für alle $X,Y \in S$ ist $X$ mit $Y$ verwandt unter $\theta_k$, in Zeichen $X\equiv_{\theta_k} Y$, genau dann wenn $p(X,k)=p(Y,k)$. Das heißt, zwei Sequenzen sind in der selben Klasse bezüglich $\theta_k$, wenn sie den selben Prefix der Länge $k$ teilen.
+
+\subsubsection*{Suchstrategien}
+Breadth-First und Depth-First sind effiziente Suchstrategien, um häufige Sequenzen innerhalb von Eltern-Klassen zu finden. Beide basieren auf der rekursiven Zerlegung der Eltern-Klassen in kleinere Klassen die anhand der Äquivalenz Relation $\theta_k$ gebildet werden und dem resultierenden Verbund von Äquivalenzklassen.\\
+Bei der Breadth-First-Suche (BFS) wird der Verbund der Äquivalenklassen, die durch die rekursive Anwendung von $\theta_k$ entstehen, bottom-up untersucht. Das heißt alle Klassen einer Ebene werden verarbeitet, bevor man zur nächsten Ebene vorgeht. Der Vorteil dieser Vorgehensweise ist, dass man beispielsweise die Menge der 2-Sequenzen kennt bevor die 3-Sequenzen gebildet werden. DFS verbraucht weniger Arbeitsspeicher als BFS.\\
+Bei der Depth-First-Suche (DFS) werden alle Äquivalenzklassen eines Pfades bearbeitet, bevor man zum nächsten Pfad übergeht. In $R$ sind beide Suchstrategien implementiert, wobei in dieser Arbeit DFS verwendet wurde.
+
+\subsubsection*{Verknüpfung von ID-Listen}
+Hier soll die Verknüpfung von zwei ID-Listen etwas genauer erklärt werden. Sei $P = [A\rightarrow B]$ eine Äquivalenzklasse mit den Elementen $\{P\rightarrow B,P\rightarrow C,P\rightarrow E \}$. Da bei Online-Tracking-Daten keine Itemsets möglich sind, reduziert sich die Anzahl der mögliche Fälle bei der Verknüpfung. Werden $P\rightarrow B$ und $P\rightarrow C$ verknüpft, so gibt es nur zwei mögliche Ergebnisse, $P\rightarrow B\rightarrow C$ oder $P\rightarrow C\rightarrow B$. Ein Spezialfall ist die Verknüpfung von $P\rightarrow B$ mit sich selber. Dabei kann nur die Sequenz $P\rightarrow B\rightarrow B$ entstehen.\\
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c||c|c||c|c||c|c}
+\multicolumn{2}{c||}{$P\rightarrow B$} & \multicolumn{2}{c||}{$P\rightarrow C$} & \multicolumn{2}{c||}{$P\rightarrow B\rightarrow C$} & \multicolumn{2}{c}{$P\rightarrow C\rightarrow B$}\\ \hline \hline
+ID  & Position & ID  & Position & ID & Position & ID & Position \\ \hline
+1   & 2				 & 1   & 7			  & 1  & 7        & 8	 & 5   		  \\
+1   & 3				 & 1   & 8        & 1  & 8        & 8  & 8        \\
+1   & 4				 & 3   & 2        & 8  & 3        & 13 & 5        \\
+4   & 6				 & 5   & 7        & 8  & 4        & 13 & 7        \\
+7   & 4				 & 8   & 3        & 8  & 5        &    &          \\
+8   & 2				 & 8   & 4        & 8  & 8        &    &          \\
+8   & 3				 & 8   & 5        &    &          &    &          \\
+8   & 5				 & 8   & 8        &    &          &    &          \\
+8   & 8				 & 11  & 3        &    &          &    &          \\
+13  & 5				 & 13  & 2        &    &          &    &          \\
+13  & 7				 & 16  & 8        &    &          &    &          \\
+15  & 6				 & 20  & 2        &    &          &    &          \\
+17  & 2				 &     &          &    &          &    &          \\
+20  & 2				 & 	   & 				  &    & 	        & 	 &     	
+\end{tabular}
+\caption{Verknüpfung von ID-Listen}\label{join}
+\end{table}
+Tabelle \ref{join} enthält ein Beispiel zur Verknüpfung von den ID-Listen von $P\rightarrow B$ und $P\rightarrow C$. Um die ID-Liste von $P\rightarrow B\rightarrow C$ zu ermitteln muss überprüft werden, ob es zeitliche Beziehungen gibt. Das heißt, für jedes $(ID_i,Position_i)$-Paar aus der ID-Liste von $P\rightarrow B$ wird überprüft, ob es in der ID-Liste von $P\rightarrow C$ ein $(ID_j,Position_j)$-Paar gibt mit $Position_j > Position_i$ und $ID_i = ID_j$. Wenn dies der Fall ist, so enthält $ID_i$ die Sequenz $P\rightarrow B\rightarrow C$ und das Paar $(ID_i, Position_k)$ wird dessen ID-Liste hinzugefügt. Die ID-Liste von $P\rightarrow C\rightarrow B$ wird analog ermittelt.\\
+Da nur Sequenzen innerhalb einer Klasse, die den selben Prefix besitzen, verknüpft werden, muss nur die Position des letzten Items berücksichtigt werden.
+
+\subsubsection*{Der Algorithmus}
+Algorithmus \ref{spm_spade} enthält die oberflächliche Struktur von SPADE. Die Hauptschritte sind die Berechnung der häufigen 1-Sequenzen und 2-Sequenzen, die Zerlegung in Prefix-basierte Eltern-Äquivalenzklassen und die Berechnung aller anderen häufigen Sequenzen mittels BFS oder DFS. Im Folgenden sollen die einzelnen Schritte etwas genauer erläutert werden.\\
+\floatname{algorithm}{Algorithmus}
+\begin{algorithm}
+\caption{SPADE$(min\_ sup,D)$}\label{spm_spade}
+\label{spadealg}
+\begin{algorithmic}
+\STATE $F_1 = \{ \textit{frequent items or 1-sequences} \}$
+\STATE $F_2 = \{ \textit{frequent 2-sequences} \}$
+\STATE $\epsilon = \{ \textit{equivalence classes } [X]_{\theta_1} \}$
+\FOR{all [X] $\in \epsilon$} \STATE{Enumerate-Frequent-Seq([X])} \ENDFOR
+\end{algorithmic}
+\end{algorithm}
+Aus der vertikalen Datenbank (Tabelle \ref{input}) erhält man die ID-Listen (Tabelle \ref{idlist}). Der Support der 1-Sequenzen entspricht dann
+jeweils der Anzahl der unterschiedlichen IDs in den ID-Listen. Wenn der Support für ein Item größer als der minimal geforderte Support ist, so wird dieses Item als häufige 1-Sequenz abgespeichert. Dieser Vorgang benötigt nur einen Scan der Datenbank.\\
+Sei $N=|F_1|$ die Anzahl der häufigen Items und $A$ die mittlere ID-Listen Größe in Bytes. Ein naiver Ansatz ist, alle $\binom{N}{2}$ ID-List-Verknüpfungen durchzuführen und dann jeweils den Support zu berechnen. Dafür müssten $A*N*(N-1)/2$ Bytes gelesen werden, was ungefähr $N/2$ Datenscans entspricht.\\
+Eine effizientere Alternative ist eine nahtlose Transformation der vertikalen ID-Listen in eine horizontale Datenbank. Tabelle \ref{hor} stellt diese Transformation für das Beispiel aus Tabelle \ref{idlist} dar. Die (ID, Position)-Paare kategorisiert nach Items werden zu (Item, Position)-Paaren kategorisiert nach ID transformiert. Anhand der horizontalen Datenbank kann $F_2$ einfach berechnet werden. Es wird eine Liste aller 2-Sequenzen in jeder ID-Liste gebildet und in einem zweidimensionalen Array werden die Anzahlen der 2-Sequenzen geupdated.\\
+\begin{table}[H]
+\centering
+\begin{tabular}{c|l}
+ID & (Item, Position)-Paare \\ \hline
+1  & (A,1)(A,3)(B,4)(D,2) \\
+2  & (B,2)(C,2) \\
+3  & (D,1) \\
+4  & (A,1)(B,3)(D,2)
+\end{tabular}
+\caption{Transformation in horizontale Datenbank}\label{hor}
+\end{table}
+Daraufhin wird die Menge $\epsilon$ aller Äquivalenzklassen $[X]_{\theta_1}$ gebildet. Das heißt alle 2-Sequenzen, die das selbe erste Item haben, werden zu einer Klasse zusammengefasst.\\
+Im letzten Schritt werden dann für alle Klassen $[X]$ aus $\epsilon$ die häufigen Sequenzen ermittelt. Dies geschieht durch die Verknüpfung der ID-Listen von allen Elementen aus $[X]$ und der Überprüfung, ob diese den minimalen Support erfüllen. Die als häufig ermittelten Sequenzen liefern die ID-Listen zur Verknüpfung auf der nächsten Ebene. Dieser Prozess wird fortgesetzt bis alle häufigen Sequenzen ermittelt wurden. Dieser Suchvorgang kann mittels BFS oder DFS bewerkstelligt werden.\\
+
+\subsubsection*{Pruning}
+Der SPADE-Algorithmus unterstützt Pruning von Sequenzen. Sei $\alpha_1$ das erste Element einer Sequenz $\alpha$. Vor der Verknüpfung einer neuen $k$-Sequenz $\beta$, wird überprüft, ob alle $k$ Subsequenzen der Länge $(k-1)$ von $\beta$ häufig sind. Ist dies nicht der Fall, kann $\beta$ keine häufige Sequenz sein und wird nicht weiter berücksichtigt. Ein Problem dabei ist, dass nur $(k-1)$ der $k$ Subsequenzen in der selben Klasse wie $\beta$ sind.\\
+Man betrachte das folgende Beispiel mit der $4$-Sequenz $\beta = (A\rightarrow B\rightarrow C\rightarrow D)$. Die $4$ Subsequenzen der Länge $3$ sind $(A\rightarrow B\rightarrow C)$, $(A\rightarrow B\rightarrow D)$, $(A\rightarrow C\rightarrow D)$ und $(B\rightarrow C\rightarrow D)$, wobei letztere nicht der selben Klasse angehört wie $\beta$. Die ersten drei Subsequenzen liegen in der Klasse $[A]$ und die letzte in der Klasse $[B]$. Wenn die Klasse $[B]$ bereits bearbeitet wurde, liegen alle Informationen zum Pruning bereits vor. Ansonsten kann kein Pruning durchgeführt werden, wobei partielles Pruning, dass nur auf den Subsequenzen aus Klasse $[A]$ basiert möglich ist.\\
+Ein Nachteil des Pruning ist, dass alle häufigen Sequenzen der vorherigen Ebenen in einer Art Hashtabelle gespeichert werden müssen. Obwohl diese Art von Pruning eine große Anzahl von potentiellen Sequenzen ausschließen kann, haben Simulationsstudien \cite{spade} gezeigt, dass dadurch die Laufzeit nicht verbessert wird. Das liegt vor allem daran, dass die Verknüpfung von ID-Listen besonders für längere Sequenzen sehr schnell ist. Das heißt, dass die Verknüpfung ungefähr gleich schnell ist wie das Überprüfen, ob alle Subsequenzen häufig sind. Zudem kann bei einer großen Anzahl von häufigen Sequenzen der virtuelle Arbeitsspeicher beim Laden eben dieser überschritten werden. Deshalb ist das Pruning von Sequenzen in $R$ nicht implementiert.

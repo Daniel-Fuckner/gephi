@@ -1,0 +1,53 @@
+\section{Datenlage}\label{datenlage}
+
+Die Daten wurden von der Refined Labs GmbH als SQL-Dump bereitgestellt, der eine Größe von circa $13$ Gigabyte hat. Die MySQL-Datenbank enthält die vier Tabellen \textit{project\_out}, \textit{redirects\_short}, \textit{searchFunnel} und \textit{stage2\_transactionHandling}. Mit Hilfe der vorhanden Informationen in \textit{searchFunnel} und \textit{stage2\_transactionHandling} konnten die Kontaktpunkte in \textit{redirects\_short} in konvertierte und nicht-konvertierte Funnels unterteilt werden. In \textit{projects\_out} sind die Kampagnen in Form einer Baumstruktur organisiert. In Absprache mit der Interhyp AG wurden $17$ Kategorien ausgewählt, die sich auf den ersten drei Ebenen dieser Baumstruktur befinden. Anhand von IDs wurde jedem Kontaktpunkt eine dieser Kategorien zugewiesen.\\
+Tabelle \ref{exdata} enthält ein Datenbeispiel mit den Spalten \textit{ID}, \textit{Campaign}, \textit{Transaction} und \textit{Position}. Das Beispiel enthält zwei verschiedene \textit{IDs}, das heißt zwei Funnels, wobei der erste vier und der zweite drei Kontaktpunkte hat. Die Spalte \textit{Campaign} enthält die Kampagne der Kontaktpunkte. \textit{Transaction} ist eine binäre Variable und gibt an, ob der Kunde konvertiert ist, wobei der Wert $1$ nur für den letzten Kontaktpunkt vor der Konvertiertung angenommen wird. Das heißt bei \textit{ID} $1$ handelt es sich um einen konvertierten und bei \textit{ID} $2$ um einen nicht-konvertierten Funnel. Die \textit{Position} gibt die Nummer des Kontaktpunktes an und reicht damit von $1$ bis zur Länge des Funnels.\\
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{|c|l|c|c|c|c|}
+			\hline
+			ID & Campaign 									 & Transaction & Position & ... \\ \hline\hline
+			1  & Affiliate - Partnerprogramm & 0					 & 1		    & ... \\ \hline
+			1  & SEM - Brand                 & 0					 & 2		    & ... \\ \hline
+			1  & Direct                      & 0					 & 3		    & ... \\ \hline
+			1  & Direct                      & 1					 & 4		    & ... \\ \hline
+			2  & Display                     & 0					 & 1		    & ... \\ \hline
+			2  & SEM - Generisch             & 0					 & 2		    & ... \\ \hline
+			2  & Social Media                & 0					 & 3		    & ... \\ \hline
+		\end{tabular} 
+	\end{center}
+	\caption{Beispiel für einen Auszug aus der Datenbank}\label{exdata}
+\end{table}
+Nun sollen noch die verschiedenen Kategorien des Features \textit{campagin}, das heißt die verschiedenen Werbeformen betrachtet werden. Tabelle \ref{beschreibungCampaign} enthält Erklärungen der $17$ verwendeten Kategorien.\\
+\textit{Affiliate - Partnerprogramm} sind Partner, die von der Interhyp AG bereitgestellte Werbemittel wie Rechner, Logo oder Banner einbinden. Partner, die einen Zinsvergleich bereitstellen, welcher das Zinsangebot der Interhyp AG mit deren Wettbewerbern im Vergleich dargestellt, gehören \textit{Affiliate - Rest} an. \textit{Direct} bedeutet, dass ein potentieller Kunde im Browser direkt \textit{www.interhyp.de} eingibt und \textit{Display} sind Bannerschaltungen auf diversen Webseiten. \textit{E-Mailing} umfasst Mails an Interessenten, die bereits einen Antrag gestellt oder ein Infopaket angefordert haben. Wenn ein potentieller Kunde über einen unbezahlten Link zur Interhyp AG gelangt, so wird der Kontaktpunkt der Kampagne \textit{Generic} zugewiesen. \textit{Kooperationen} sind individuelle Zusammenarbeiten mit größeren Partnern, die je nach Vertrag verschiedene Werbemittel auf ihrer Seite einbinden und \textit{Newsletter} sind regelmäßige Rundschreiben. \textit{SEM} sind bezahlte Suchergebnisse, wobei \textit{Brand} bedeutet, dass die Suchanfrage das Wort \textit{Interhyp} beinhaltete, \textit{Generisch} bedeutet, dass etwas wie \textit{Baufinanzierung} oder ähnliches gesucht wurde und \textit{Remarketing} bedeutet, dass der potentielle Kunde bereits zuvor auf der Seite der Interhyp AG war und deshalb erneut eine Werbeeinblendung der geschaltet wurde. Unbezahlte Suchergebnisse werden \textit{SEO} zugewiesen und \textit{Social Media} umfasst Werbung auf \textit{Facebook} und \textit{gutefrage.net}.
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{|l|p{9cm}|}
+			\hline \textbf{Kampagne} & \textbf{Beschreibung}\\ \hline
+			\hline Affiliate - Partnerprogramm & Partner, die Werbemittel einbinden\\
+			\hline Affiliate - Rest & Partner, die Zinsvergleich bereitstellen\\ 
+			\hline Direct & Direkte Eingabe von \textit{www.interhyp.de}\\ 
+			\hline Display & Bannerschaltungen\\
+			\hline E-Mailing & Mails an Interessenten, die schon einen Antrag o.ä. gestellt haben\\
+			\hline Generic & Unbezahlter Link\\
+			\hline Kooperationen - Focus & \multirow{5}{6cm}{Individuelle Zusammenarbeit mit größeren Partnern}\\
+			Kooperationen - Immonet & \\
+			Kooperationen - Immoscout24 & \\
+			Kooperationen - Immowelt & \\
+			Kooperationen - Rest & \\
+			\hline Newsletter & Regelmäßige Rundschreiben\\
+			\hline SEM - Brand & \multirow{3}{6cm}{Bezahlte Suchergebnisse}\\
+			SEM - Remarketing & \\
+			SEM - Generisch & \\
+			\hline SEO & Unbezahlte Suchergebnisse\\
+			\hline Social Media & \textit{facebook} und \textit{gutefrage.net}\\
+			\hline
+		\end{tabular} 
+	\end{center}
+	\caption{Beschreibung der Kampagnen}\label{beschreibungCampaign}
+\end{table}
+Ein Kontaktpunkt mit einer der $17$ Kampagnen tritt entweder in der Form eines \textit{Clicks} oder eines \textit{Views} auf. Man spricht von einem \textit{Click}, wenn der potentielle Kunde tatsächlich etwas angeklickt hat und ein \textit{View} wird getrackt, wenn ein Banner oder ähnliches lediglich gesehen, aber nicht angeklickt wird. An dieser Stelle wirft die Datenerhebung allerdings ein Problem für die statistischen Analysen auf. Die \textit{Views} werden für alle konvertierten Funnels gespeichert, für die nicht-konvertierten Funnels allerdings nur, wenn diese bei einem anderen Kunden der Refined Labs GmbH konvertieren. Dass heißt, es ist eine systematische Veränderung der Daten gegeben. Deshalb besteht keine Möglichkeit die \textit{Views} in statistische Analysen, die konvertierte und nicht-konvertierte Funnels vergleichen, einzubeziehen. Die \textit{Views} werden lediglich in Kapitel \ref{descriptiv} in einigen Plots betrachtet, die nur konvertierte Funnels enthalten, und von den weiteren Analysen ausgeschlossen.\\
+Nach der Vorverarbeitung der Daten, die mit \textit{MySQL 6.1} und \textit{R 3.0.2} \cite{r} durchgeführt wurde, liegen $ 297,963 $ \textit{Clicks} für die konvertierten und $ 9,550,802 $ \textit{Clicks} für die nicht-konvertierten Funnels vor. Zum Handhaben der großen Datenmenge wurden die Pakete \textit{data.table} \cite{data.table} und \textit{plyr} \cite{plyr} verwendet. Eine nähere Beschreibung der in \textit{R} erstellten Features erfolgt in Kapitel \ref{descriptiv}.\\
+
+
+

@@ -1,0 +1,114 @@
+\section{Zeitdiskretes Survival-Modell}\label{survival}
+
+\subsection{Lebensdauer-Modell}\label{secModel1}
+
+Aufgrund der in Kapitel \ref{datenlage} beschriebenen Datenlage erscheint die Anwendung eines Modells aus dem Feld der Lebensdaueranalyse intuitiv. Es wird die Zeit bis zu einem Ereignis betrachtet, welches in diesem Fall das Ausfüllen eines Online-Antrages ist. Der potentielle Kunde befindet sich während der Beobachtungsspanne im transienten Zustand bis er durch die Konvertierung in den absorbierenden Zustand wechselt, an dem die Beobachtung endet. Tritt am Ende der Beobachtung keine Konvertierung ein, so spricht man von einer Rechtszensierung.\\
+Die Position gibt die Nummer des Kontaktpunktes an und bildet die Zeitachse des Modells. Das heißt, es handelt sich um ein zeitdiskretes Modell und die Zielvariable $y_{ip}$ (\ref{zielvar}) nimmt den Wert Eins an, wenn Kunde $i$ an der Position $p$ konvertiert ist. Für alle vorherigen Positionen eines konvertierten Funnels und für alle Positionen eines nicht-konvertierten Funnels nimmt $y_{ip}$ den Wert Null an. $N_p$ ist die Anzahl der Beobachtungen an Position $p$. Diese nimmt mit steigendem $p$ ab, da in jeder Position Funnels konvertieren oder Beobachtungen ohne Konvertierung enden. Deshalb wird das Modell nur auf die ersten $25$ Positionen angewendet, da für spätere Positionen nicht ausreichend konvertierte Funnels vorliegen.\\
+\begin{align}
+	y_{ip} = \begin{cases} 1 & \text{Beobachtung } i \text{ konvertiert an Position } p\\
+												 0 & \text{sonst} 
+					 \end{cases} \text{, } p=1,...,25 \text{, } i=1,...,N_p \label{zielvar}
+\end{align}
+Das Modell schätzt die Hazardrate $\lambda_{ip}$ (\ref{haz}), das heißt die Wahrscheinlichkeit, dass Beobachtung $i$ an Position $p$ konvertiert unter der Bedingung, dass die Länge des Funnels von Beobachtung $i$ größer oder gleich $p$ ist, was lediglich bedeutet, dass für Beobachtung $i$ an Position $p$ überhaupt noch ein Kontaktpunkt vorliegt. Außerdem wird auf die Features $x_{ip}$ bedingt, die später noch näher erläutert werden.
+\begin{align}
+	\lambda_{ip} = P(y_{ip}=1|funnelLength_i \geq p, x_{ip}) \label{haz}
+\end{align}
+Die Hazardrate wird mittels eines Logit-Modells (\ref{logit1}-\ref{logit2}) mit der Zielvariable $y_{ip}$ an jeder Position $p$ seperat geschätzt. Die Annahmen des Modells sind, dass die $y_{ip}|x_{ip}$ unabhängig Bernoulli-verteilt sind mit der Hazardrate $\lambda_{ip}$ als Parameter und der Erwartungswert wird anhand der Responsefunktion $h$ mit der Prädiktorfunktion $f_{p}$ verknüpft.
+\begin{align}
+	y_{ip}|x_{ip} &\stackrel{ind}{\sim} Bin(1, \lambda_{ip}) \label{logit1} \\
+	E(y_{ip}|x_{ip}) = P(y_{ip} = 1|x_{ip}) = \lambda_{ip} &= h(f_{p}(x_{ip})) = \frac{\exp(f_{p}(x_{ip}))}{1+\exp(f_{p}(x_{ip}))}\label{logit2}
+\end{align}
+Aus diesen Annahmen lassen sich Likelihood (\ref{lik}) und Log-Likelihood (\ref{loglik}) des Modells ableiten.
+\begin{align}
+	L(\lambda_{ip}) &= \prod_{i=1}^{N_p} \lambda_{ip}^{y_{ip}} (1-\lambda_{ip})^{1-y_{ip}} \label{lik} \\
+	l(\lambda_{ip}) &= \ln(L(\lambda_{ip})) = \sum_{i=1}^{N_p} (y_{ip} \ln(\lambda_{ip}) + (1-y_{ip}) \ln(1-\lambda_{ip})) \notag \\
+	&= \sum_{i=1}^{N_p} (y_{ip} f_p(x_{ip}) - \ln(1+\exp(f_p(x_{ip})))) \label{loglik}
+\end{align}
+Damit ergibt sich der binomielle Verlust aus der negativen Log-Likelihood (\ref{binVer}) und das Logit-Modell ist lösbar durch die Minimierung dieses Verlusts.
+\begin{align}
+	L(y_{ip},f_p(x_{ip})) = -\sum_{i=1}^{N_p} (y_{ip} f_p(x_{ip}) + \ln(1+\exp(f_p(x_{ip}))))
+\end{align}
+Um ein gutes Prognose-Modell zu entwickeln, wird eine Ensemble-Methode angewendet, die im nächsten Abschnitt vorgestellt wird.
+
+\subsection{Stochastic Gradient Boosting}\label{secModel2}
+
+\subsubsection*{Algorithmus}
+
+Stochastic Gradient Boosting ist eine Ensemble-Methoden, die durch mehrfache Anwendung des sogenannten Basis-Lerners ein Ensemble von Schätzern für eine Prognosefunktion liefert. Durch Aggregation der Schätzer erhält man die endgültige Prognosefunktion. Ein sehr beliebter Basis-Lerner sind Stümpfe, das heißt Bäume mit nur einem Split. Einige Vorteile von Bäumen sind, dass sie mit kategoriellen Features, Ausreißern und fehlenden Werten umgehen können. Außerdem wird der schwachen Prognoseleistung von Bäumen durch die Kombination mit Boosting entgegen gewirkt.\\
+Gesucht ist also eine Prognosefunktion, die den Erwartungswert einer Verlustfunktion minimiert. Als Verlustfunktion wird der binomielle Verlust (\ref{binVer}) verwendet, wobei sich die Prädiktorfunktion wie folgt ergibt.
+\begin{align}
+	f(x_{ip}) =& \text{offset}(\hat{\lambda}_{i,p-1}) + \notag \\
+						 &f_{weekday,p}(\text{weekday}_{ip}) + \notag \\
+						 &f_{hour,p}(\text{hour}_{ip}) + \notag \\
+						 &f_{campaign,p}(\text{campaign}_{ip}) + \notag \\
+						 &f_{campaignLast,p}(\text{campaign}_{i,p-1}) + \notag \\
+						 &f_{campaignLast2,p}(\text{campaign}_{i,p-2}) + \notag \\
+						 &f_{timeSinceLast,p}(\text{timeSinceLast}_{ip}) + \notag \\
+						 &f_{timeSinceFirst,p}(\text{timeSinceFirst}_{ip}) \label{praediktor}
+\end{align}
+Der Prädiktor ist also eine additive Funktion von Treppenfunktionen der sieben verwendeten Features und einem offset. Hier sei nochmal darauf hingewiesen, dass Features wie \textit{hasClicked} oder \textit{clickCount} nicht verwendet werden können, da die Views aufgrund der Problematik der Datenerhebung nicht berücksichtigt werden. Die verwendeten Einflussgrößen sind also der Wochentag und die Stunde des jeweiligen Kontaktpunktes, die Kampagne des aktuellen und der letzten zwei Kontakte, sowie die Dauer seit dem vorherigen Kontaktpunkt und die Gesamtdauer seit dem ersten bis zum jetzigen Kontakt. Die Funktionen $f_{.,p}$ können theoretisch für verschiedene Positionen komplett unterschiedliche Formen annehmen. Es sei ausdrücklich darauf hingewiesen, dass $f_{campaignLast,p}(\textit{campaign}_{i,p-1})$ und $f_{campaign,p-1}(\textit{campaign}_{i,p-1})$ zwei unterschiedliche Funktionen sind. Erstere gibt den Einfluss der Art des vorherigen Kontaktpunktes auf die Konvertierungswahrscheinlichkeit an der Position $p$ wieder und zweitere den Einfluss der Art des aktuellen Kontaktpunktes auf die Konvertierungswahrscheinlichkeit an der Position $p-1$. Unter der Annahme, dass der Einfluss der Features an den verschiedenen Positionen ähnlich ist, fließt zusätzlich noch die Vorhersage des Modells der vorherigen Position als offset mit ein. Dadurch konnten die Ergebnisse besonders an späteren Positionen, an denen weniger Daten vorhanden sind, deutlich verbessert werden. Ergebnisse ohne offset sind im elektronischen Anhang zu finden.\\
+Der offset fällt für Position eins weg, da es noch keine Vorhersagen eines vorherigen Modells gibt. Außerdem sind für Position eins die Features \textit{campaignLast}, \textit{campaignLast2}, \textit{timeSinceLast} und \textit{timeSinceFirst} offentsichtlich noch nicht vorhanden, so dass diese ebenfalls wegfallen. An Position zwei ist \textit{campaignLast2} noch nicht vorhanden und \textit{timeSinceLast} und \textit{timeSinceFirst} sind hier identisch, so dass nur eine der beiden berücksichtigt wird. Ab Position Drei ergibt sich der Prädiktor dann exakt so wie in (\ref{praediktor}) dargestellt.\\
+\floatname{algorithm}{Algorithmus}
+\begin{algorithm}
+\caption{Gradient Boosting}\label{alg}
+\label{gradboosting}
+\begin{algorithmic}
+\STATE Setze Startwert für $f_{0p}(x_{ip})$
+\FOR{$m=1:n.trees$}
+	\STATE Setze $\lambda_{ip}(x_{ip}) = \frac{\exp(f_{m-1,p}(x_{ip}))}{1+\exp(f_{m-1,p}(x_{ip}))}$
+	\FOR{$i=1:N_p$} 
+		\STATE $r_{imp} = - \frac{\partial L(y_{ip},f_{m-1,p}(x_{ip}))}{\partial f_{m-1,p}(x_{ip})} = y_{ip} - \lambda_{ip}(x_{ip})$
+	\ENDFOR
+	%\STATE Fit a regression base learner to the pseudo-residuals $r_{im}$:
+	\STATE Fitte Stumpf: $\theta_{mp} = \argmin_{\theta} \sum_{i=1}^{N_p} (r_{imp} - h(x_{ip}, \theta))^2$
+	\STATE Line-Search: $\beta_{mp} = \argmin_{\beta} \sum_{i=1}^{N_p} L(y_{ip}, f_{m-1,p}(x_{ip}) + \beta h(x_{ip},\theta_{mp}))$
+	\STATE Update: $f_{mp}(x_{ip}) = f_{m-1,p}(x_{ip}) + \beta_{mp} h(x_{ip},\theta_{mp})$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+Algorithmus \ref{alg} enthält Pseudo-Code, der das grobe Vorgehen beim Gradient Boosting erläutern soll. Dieser muss für jedes $p=1,...,25$ durchgeführt werden. Zunächst muss ein Startwert des Prädiktors an Position $p$ festgelegt werden. Daraufhin werden folgende Schritte für $m=1$ bis \textit{n.trees} iteriert. Zunächst werden die Hazardraten $\lambda_{ip}$ durch Rücktransformation der Prädiktorfunktion aus der vorherigen Iteration berechnet. Für jede Beobachtung $i$ werden dann die Pseudo-Residuen $r_{imp}$ berechnet, die die Richtung des negativen Gradienten angeben. Die Pseudo-Residuen entsprechen also der Richtung des steilsten Abstiegs der Verlustfunktion. An die Pseudo-Residuen wird ein Basis-Lerner $h(x_{ip},\theta_{mp})$, in diesem Fall ein Entscheidungsbaum, so angepasst, dass er den negativen Gradienten so gut wie möglich approximiert. Bildlich gesprochen wird das Modell also in die Richtung der größten Verringerung des Verlusts verschoben. Da als Basis-Lerner Stümpfe verwendet werden, wird die Verbesserung des Modells in einem Boosting-Schritt durch nur eines der sieben Features erklärt. Per Line-Search wird daraufhin die optimale Schrittweite $\beta_{mp}$ berechnet und das Modell wird geupdatet mit $f_{mp}(x_{ip}) = f_{m-1,p}(x_{ip}) + \beta_{mp} h(x_{ip},\theta_{mp})$. Nach \textit{n.trees} Iterationen endet der Algorithmus.\\
+Durch die Verringerung des Verlusts in jeder Iteration kann es vor allem bei einer hohen Anzahl von Iterationen zu Overfitting kommen. Deshalb wird mittels Kreuzvalidierung die optimale Anzahl an Iterationen ausgewählt. Das heißt $\hat{f}(x_{ip}) = f_{m\_opt,p}(x_{ip})$ wird als Ergebnis verwendet. Das Ensemble der Splits bis zur optimalen Iterationsanzahl bildet für jedes der Feautures eine Treppenfunktion.
+
+\subsubsection*{Parameter des Modells}
+
+Das Modell wurde mit dem Paket \textit{gbm} \cite{gbm} berechnet und mit Hilfe der R-Pakete \textit{foreach} \cite{foreach} und \textit{doSNOW} \cite{dosnow} parallelisiert. Die Modelle für die einzelnen Positionen können allerdings nur dann parallelisiert werden, wenn kein offset benützt wird. Für die Anwendung des Modells müssen noch einige Parameter eingestellt werden.\\
+Zunächst wurden die Daten in Trainings- und Testdaten aufgeteilt, sodass Trainings- und Testdaten jeweils die Hälfte der gesamten Daten ausmachen. Da die Anzahl der nicht-konvertierten Funnels deutlich überwiegt und einige Kampagnen vergleichsweise selten in den Daten auftreten, wurden die Trainingsdaten stratifiziert bezüglich konvertierter beziehungsweise nicht-konvertierter Funnel und der Variable \textit{Campaign} gezogen. Außerdem wurde die Länge der Funnels bei der Ziehung berücksichtigt, so dass  Trainings- und Testdaten positionsübergreifend klar getrennt sind und das Verhältnis von eins zu eins trotzdem eingehalten wird. Das heißt, dass eine Beobachtung, die an Position $1$ in den Trainingsdaten enthalten ist auch an allen späteren Positionen in den Trainingsdaten ist. Das selbe gilt für die Testdaten. Dies ist wichtig, damit Trainings- und Testdaten bei der Anwendung des offsets nicht vermischt werden. Anhand der Trainingsdaten wurde das Modell gefittet. Die Testdaten dienen der späteren Bewertung der Prognosegüte des Modells.\\
+Die maximale Anzahl der Bäume \textit{n.trees} wurde gleich $3000$ gesetzt, wobei für die Präsentation der Ergebnisse die optimale Anzahl an Bäumen mittels 5-facher Kreuzvalidierung gewählt wurde. Dafür werden die Trainingsdaten in fünf gleich große Partitionen aufgeteilt. Dann wird der Gradient Boosting-Algorithmus fünf mal angewendet, wobei jeweils eine Partition der Daten außen vorgelassen wird. Anhand dieser Partition wird dann der binomielle Verlust nach jeder Iteration mit der aktuellen Prognosefunktion berechnet. Das führt für jede Iteration zu fünf Schätzern für den binomiellen Verlust. Diese fünf Schätzer werden für jede Iteration gemittelt und die Iteration mit dem geringsten binomiellen Verlust wird als optimale Iterationsanzahl gewählt. Daraufhin wird der Gradient Boosting-Algorithmus auf alle fünf Partitionen angewendet.\\
+Zusätzlich zu der Beschränkung der Iterationen, wird dem Overfitting auch durch einen Shrinkage-Parameter $\mu$ entgegen gewirkt. Dieser bewirkt, dass nicht die optimale Schrittweite $\beta_{mp}$ in jeder Iteration gegangen wird, sondern nur ein Bruchteil dieser Schrittweite. Es wird also durch $f_{mp}(x_{ip}) = f_{m-1,p}(x_{ip}) + \mu \beta_{mp} h(x_{ip},\theta_{mp})$ geupdatet, wobei $\mu$ gleich $0.01$ gewählt wurde, was einem üblichen Wert für diesen Parameter entspricht. Bei der Wahl von $\mu$ und \textit{n.trees} muss stets die Rechenzeit im Auge behalten werden.\\
+Wie bereits erwähnt, wurden als Basis-Lerner Stümpfe gewählt. Das wurde durch die Festlegung von \textit{interaction.depth} auf $1$ realisiert. Mit einer höheren \textit{interaction.depth} ließen sich auch Interaktionen modellieren. Die Stärke von solchen Interaktionen lassen sich beispielsweise mit Friedmans h-Statistik \cite{friedman_h} untersuchen. Die Einführung von Interaktionen führt bei den vorliegenden Daten aber zu einer Verschlechterung der Prognosegüte. Bei Interesse sind Ergebnisse diesbezüglich im elektronischen Anhang zu finden.\\
+Der bis hierhin beschriebene Algorithmus entspricht lediglich dem Gradient Boosting. Wenn man in jeder Iteration allerdings nur einen Teil der Daten verwendet, spricht man vom Stochastic Gradient Boosting. Diese Anpassung führt meist zur einer Verbesserung der Ergebnisse \cite{fried_additive}, wobei noch nicht geklärt ist, wie genau es zu dieser Verbesserung kommt. In diesem Modell wurde die \textit{bag.fraction}, das heißt der Anteil der verwendeten Daten in jedem Schritt, auf $0.5$ gesetzt. Wird die \textit{bag.fraction} auf $1$ gesetzt, was dazu führt das in jedem Schritt die kompletten Trainingsdaten verwendet werden, so sind die Ergebnisse bei den gegebenen Daten nahezu identisch.
+
+\subsubsection*{Output}
+
+Als Ergebnis ist für jede Beobachtung $i$ und jede Position $p$ ein Wert der Prädiktorfunktion $\hat{f}_p(x_{ip})$ gegeben. Daraus können die Hazardraten durch Rücktransformation (\ref{trafo}) berechnet werden. Diese geben die Wahrscheinlichkeit für Beobachtung $i$ an Position $p$ zu konvertieren an.
+\begin{align}
+	\hat{\lambda}_{ip} = \frac{\exp(\hat{f}_p(x_{ip}))}{1+\exp(\hat{f}_p(x_{ip}))} \label{trafo}
+\end{align}
+Ein weiterer Kennwert, der die Prognosefunktion beschreibt, ist die Relative Wichtigkeit der Einflussgrößen \cite{fried_greedy}. Sie gibt die Stärke des Einflusses der Features auf die Prognoseregel an. $\hat{I}_{jp}^2(m)$ (\ref{rel1}) ist die Verbesserung, die an Position $p$ in Iteration $m$ durch die Variable $j$ realisiert wird, wobei $\hat{i}_{mp} 1_{jmp}$ eben diese Verbesserung ist und $1_{jmp}$ die Indikatorfunktion, die angibt, ob in Iteration $m$ das Feature $j$ als Splitvariable genutzt wurde. $\hat{I}_{jp}^2$ (\ref{rel2}) mittelt für jedes Feature $j$ über alle Iterationen beziehungsweise Bäume und die Relative Wichtigkeit $\hat{I}_{jp}$ (\ref{rel3}) von Feature $j$ ergibt sich dann aus der Wurzel dieses Wertes. Die Wichtigkeitswerte werden so skaliert, dass sie aufsummiert über alle Features den Wert $100$ ergeben.
+\begin{align}
+	\hat{I}_{jp}^2(m) &= \hat{i}_{mp} 1_{jmp} \label{rel1} \\
+	\hat{I}_{jp}^2 &= \frac{1}{M} \sum_{m=1}^{n.trees} \hat{I}_{jp}^2(m) \label{rel2} \\
+	\hat{I}_{jp} &= \sqrt{\hat{I}_{jp}^2} \label{rel3}
+\end{align}
+Neben der Information zur Stärke des Einflusses eines Features, interessiert natürlich auch die Art dieses Einflusses, das heißt der marginale Effekt eines Features \cite{fried_greedy}. Das Ziel ist somit ein Plot, der den Zusammenhang zwischen dem Feature $j$ und der Prognosefunktion $\hat{f}_p$ an Position $p$ darstellt. Da die Prognosefunktion von mehreren Features abhängt, müssen die marginalen Effekte berechnet werden. Das Feature $x_{jp}$ ist eine Teilmenge aller Features $\{x_{1p},...,x_{np}\}$ und $x_{\backslash j,p}$ sei dessen Komplement. Damit kann die Prognosefunktion als $\hat{f}_p(x_p)=\hat{f}_p(x_{jp},x_{\backslash j,p})$ geschrieben werden und wenn man auf bestimmte Werte von $x_{\backslash j,p}$ bedingt, kann die Prognosefunktion als Funktion von lediglich $x_{jp}$ betrachtet werden.
+\begin{align}
+	\hat{f}_{x_{\backslash j,p}}(x_{jp}) = \hat{f}(x_{jp}|x_{\backslash j,p})
+\end{align}
+Die Form von $\hat{f}_{x_{\backslash j,p}}(x_{jp})$ hängt von dem für $x_{\backslash j,p}$ gewählten Wert ab. Wenn diese Abhängigkeit nicht zu stark ist, dann ist (\ref{marg}) eine gute Zusammenfassung des marginalen Effektes von $x_{jp}$ auf die Prognosefunktion. Dabei ist $p_{\backslash j,p}(x_{\backslash j,p})$ die marginale Dichte von $x_{\backslash j,p}$ und $p(x_p)$ ist die gemeinsame Dichte der Features.
+\begin{align}
+	\bar{f}_{jp}(x_{jp}) = E_{x_{\backslash j,p}}(\hat{f}_p(x_p)) = \int \! \hat{f}_p(x_{jp},x_{\backslash j,p}) p_{\backslash j,p}(x_{\backslash j,p}) \, \mathrm{d}x_{\backslash j,p}. \label{marg} \\
+	p_{\backslash j,p}(x_{\backslash j,p}) = \int \! p(x_p) \, \mathrm{d}x_{\backslash j,p}.
+\end{align}
+Die marginale Dichte kann aus den Trainingsdaten geschätzt werden, so dass (\ref{marg}) zu (\ref{marg1}) wird.
+\begin{align}
+	\bar{f}_{jp}(x_{jp}) = \frac{1}{N} \sum_{i=1}^{N_p} \hat{f}_p(x_{jp},x_{i,\backslash j,p}) \label{marg1}
+\end{align}
+Die marginalen Effekte werden wiederum zu den Hazardraten rücktransformiert.\\
+Zur Bewertung der Prognosegüte wird das Modell auf die Testdaten angewendet, so dass für jede Beobachung und jede Position der in den Testdaten eine Hazardrate vorliegt. Da die nicht-konvertierten Funnels in den Daten deutlich überwiegen, sind diese Wahrscheinlichkeiten sowohl für konvertierte als auch für nicht-konvertierte Funnels sehr niedrig. Deshalb kommt der Bayes-Klassifikator zur Beurteilung der Prognosegüte nicht in Frage, da dieser schlicht alle Beobachtungen als nicht-konvertiert vorhersagen würde.\\
+Es muss also ein geeigneter Schwellenwert gefunden werden, um die Prognosegüte des Modells zu bewerten. Wenn die Hazardrate einer Beobachtung größer ist als der Schwellenwert, so wird diese als konvertiert vorhergesagt und sonst als nicht-konvertiert. Dafür werden die Kenngrößen Sensitivität und Spezifität benötigt. Die Sensitivität ist die Richtig Positiv Rate, das heißt der Anteil der wirklich Konvertierten unter allen, die als konvertiert vorhergesagt werden, gegeben ein spezifischer Schwellenwert. Die Spezifität ist die Richtig Negativ Rate, das heißt der Anteil der Nicht-Konvertierten unter allen, die als nicht-konvertiert vorhergesagt werden. Diese Kennwerte wurden für ein Gitter von potentiellen Schwellenwerten berechnet.\\
+Die ROC (Receiver Operating Characteristics)-Kurve erlaubt die simultane Betrachtung dieser Schwellenwerte. Diese bildet die Falsch Positiv Rate, das heißt $1$ minus Spezifität, auf der x-Achse und die Sensitivität auf der y-Achse ab. Die ROC-Kurve hat ihren Ursprung im Punkt $(0,0)$ und steigt von dort monoton an bis $(1,1)$. Wenn Falsch Positiv Rate und Richtig Positiv Rate für alle Schwellenwerte gleich ist, so kann das Modell nicht zwischen konvertiert und nicht-konvertiert unterscheiden und die ROC-Kurve ist die Diagonale zwischen $(0,0)$ und $(1,1)$. Ein perfektes Modell, dass alle Beobachtungen korrekt zuweist geht durch den Punkt $(0,1)$. Je größer die Fläche zwischen der Diagonalen und der ROC-Kurve ist, desto besser ist somit auch das Modell.\\
+An dieser Stelle kommt die AUC (Area Under the Curve) ins Spiel. Sie ist definiert als die Fläche unter der ROC-Kurve (\ref{formelAUC}). Wenn das Modell nicht zwischen konvertiert und nicht-konvertiert unterscheiden kann, so ist die AUC gleich $0.5$ und die ROC ist, wie bereits erwähnt die Diagonale. Ein AUC von $1$ entspricht einem perfekten Modell. Die AUC wird interpretiert als die Wahrscheinlichkeit, dass bei einer konvertierten Beobachtung die Hazardrate größer ist als bei einer nicht-konvertierten Beobachtung.
+\begin{align}
+	AUC = \int_0^1 \! ROC(t) \, \mathrm{d}t. \label{formelAUC}
+\end{align}
+

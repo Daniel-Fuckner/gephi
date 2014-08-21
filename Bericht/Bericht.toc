@@ -1,0 +1,47 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\defcounter {refsection}{0}\relax 
+\select@language {ngerman}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1}Einleitung}{1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2}Datenlage}{2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3}Deskriptive Analyse}{5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.1}Views in den konvertierten Funnels}{5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.2}Vergleich von konvertierten und nicht-konvertierten Funnels}{7}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4}Tutorial zu Gephi}{14}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5}Zeitdiskretes Survival-Modell}{19}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.1}Lebensdauer-Modell}{19}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.2}Stochastic Gradient Boosting}{21}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {6}Sequential Pattern Mining}{26}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.1}\IeC {\"U}berblick}{26}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.2}Problemstellung}{26}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.3}SPADE}{27}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7}Visualisierung der Daten anhand eines Netzwerkes}{32}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {8}Ergebnisse}{35}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {8.1}Zeitdiskretes Survival-Modell}{35}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {8.2}Sequential Pattern Mining}{42}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {8.3}Netzwerk}{45}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {9}Zusammenfassung}{51}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {10}Elektronischer Anhang}{52}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {10.1}Verzeichnisstruktur}{52}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {10.2}Tutorial zu Gephi}{54}

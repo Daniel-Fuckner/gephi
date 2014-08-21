@@ -1,0 +1,48 @@
+\documentclass[12pt,a4paper]{scrartcl} 
+
+%Deutsch:
+	\usepackage[ngerman]{babel} %Deutsches Datumformat, Umlaute m\"oglich,...
+	\usepackage[utf8]{inputenc}
+	\usepackage[T1]{fontenc} 
+	
+%Quellenverzeichnis:
+	\usepackage[maxcitenames=2,autocite=footnote,uniquename=full,uniquelist=true,backend=biber]{biblatex} %style=authoryear-icomp
+	\usepackage{csquotes} %Hilfspaket für Biblatex
+	\bibliography{bib_database.bib} %Datei mit bibliographischen Daten
+	\DefineBibliographyStrings{ngerman}{andothers={et\ al\adddot}} % "u.a." zu "et al."
+	\DefineBibliographyStrings{ngerman}{and={\&}} % "und" zu "&"
+
+%Mathematik:
+	\usepackage{dsfont} %Symbole
+	\usepackage{amsmath} %Umgebung
+	\usepackage{amssymb} %Symbole
+	\usepackage{bbm} %doppelstreifen bei buchstaben (zb symbol für ganze zahlen \mathbbm{Z})
+	
+%Grafiken:
+	\usepackage{graphics}
+	\usepackage{graphicx}
+	\usepackage{picinpar} %bilder so einfügen, dass text um bilder weiterläuft
+	\usepackage{float} %\begin{figure}[H] => Grafik wird HIER eingefügt!
+
+%Euro-Zeichen:
+	\usepackage{eurosym}
+
+%Pseudo Code:
+	\usepackage{algorithmic}
+	\usepackage{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Eingabe:}}
+	\renewcommand{\algorithmicensure}{\textbf{Ausgabe:}}
+
+%Verzeichnis-struktur darstellen:
+	\usepackage{dirtree}
+
+%Tabellen:
+	\usepackage{multirow}
+	
+%Quellcode:
+	%\usepackage[numbered,framed]{mcode} %Quellcode darstellen
+	
+%Englisch:
+	%\usepackage[ngerman,english]{babel} %automatisch erzeugte Überschriften etc. auf englisch
+	
+\DeclareMathOperator*{\argmin}{arg\,min}
